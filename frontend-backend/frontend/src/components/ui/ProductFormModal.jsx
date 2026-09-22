@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TextInput, TextArea } from "./Field";
 import { Button } from "./Button";
 
@@ -11,15 +11,54 @@ export function ProductFormModal({ initialData, onClose, onSubmit }) {
     stock: initialData?.stock || "",
     description: initialData?.description || "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(initialData?.image_url || null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
+
+  function handleImageChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("File harus berupa gambar (JPG/PNG/WebP).");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Ukuran gambar maksimal 2MB.");
+      return;
+    }
+
+    setError("");
+    setRemoveImage(false);
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null);
+    setPreview(null);
+    setRemoveImage(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setSubmitting(true);
     try {
-      await onSubmit(form);
+      const payload = new FormData();
+      payload.append("name", form.name);
+      if (form.sku) payload.append("sku", form.sku);
+      payload.append("price", form.price);
+      payload.append("stock", form.stock || 0);
+      if (form.description) payload.append("description", form.description);
+      if (imageFile) payload.append("image", imageFile);
+      if (removeImage && !imageFile) payload.append("remove_image", "1");
+
+      await onSubmit(payload);
     } catch (err) {
       const laravelErrors = err.response?.data?.errors;
       setError(
@@ -38,6 +77,41 @@ export function ProductFormModal({ initialData, onClose, onSubmit }) {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <span className="mb-1.5 block text-sm font-medium text-ink-700">Foto Produk</span>
+            <div className="flex items-center gap-4">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border border-dashed border-ink-200 bg-ink-100">
+                {preview ? (
+                  <img src={preview} alt="Preview produk" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-2xl text-ink-200">🛍</span>
+                )}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="w-fit cursor-pointer rounded-md border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-700 transition hover:bg-ink-100">
+                  {preview ? "Ganti Foto" : "Unggah Foto"}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+                {preview && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="w-fit text-xs font-medium text-red-600 hover:underline"
+                  >
+                    Hapus foto
+                  </button>
+                )}
+                <span className="text-[11px] text-ink-500">JPG, PNG, atau WebP. Maks 2MB.</span>
+              </div>
+            </div>
+          </div>
+
           <TextInput
             label="Nama Produk"
             required

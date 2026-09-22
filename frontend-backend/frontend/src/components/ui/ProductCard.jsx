@@ -4,21 +4,37 @@ import { useCart } from "../../context/CartContext";
 
 export function ProductCard({ product }) {
   const { addItem } = useCart();
-  const outOfStock = Number(product.stock) <= 0;
+  const stock = Number(product.stock) || 0;
+  const outOfStock = stock <= 0;
+  const lowStock = !outOfStock && stock <= 5;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-lg border border-ink-200 bg-white shadow-card transition hover:shadow-lg">
-      <Link to={`/produk/${product.id}`} className="block aspect-square bg-ink-100">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-ink-200 bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg">
+      <Link to={`/produk/${product.id}`} className="relative block aspect-square overflow-hidden bg-ink-100">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-full object-cover transition group-hover:scale-105"
+            className={`h-full w-full object-cover transition duration-300 group-hover:scale-105 ${
+              outOfStock ? "opacity-60 grayscale" : ""
+            }`}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-3xl text-ink-200">
             🛍
           </div>
+        )}
+
+        {lowStock && (
+          <span className="absolute right-2 top-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+            Sisa {stock}
+          </span>
+        )}
+
+        {outOfStock && (
+          <span className="absolute inset-x-0 bottom-0 bg-ink-900/80 py-1 text-center text-[11px] font-semibold uppercase tracking-wide text-white">
+            Stok Habis
+          </span>
         )}
       </Link>
       <div className="flex flex-1 flex-col gap-1.5 p-3.5">

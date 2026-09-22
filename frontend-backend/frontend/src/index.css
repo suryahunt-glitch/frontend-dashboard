@@ -2,8 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: "Inter", system-ui, sans-serif;
-  color: #171717;
-  background: #ffffff;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+@layer base {
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: #1e1b4b;
+    background: #faf9ff;
+  }
+
+  ::selection {
+    background: #c4b5fd;
+    color: #2e1065;
+  }
+}
+
+@layer components {
+  .purple-card {
+    @apply rounded-2xl border border-violet-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-100;
+  }
 }

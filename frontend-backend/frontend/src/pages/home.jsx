@@ -18,8 +18,11 @@ export default function Home() {
 
   return (
     <SiteLayout>
-      <section className="bg-ink-900">
-        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-16 sm:grid-cols-2 sm:items-center">
+      <section className="relative overflow-hidden bg-ink-900">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-brand/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+
+        <div className="relative mx-auto grid max-w-6xl gap-6 px-4 py-16 sm:grid-cols-2 sm:items-center">
           <div>
             <h1 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl">
               Jual dan beli langsung antar pengguna.
@@ -43,7 +46,23 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="hidden justify-self-end text-8xl sm:block">🛍️</div>
+
+          <div className="hidden justify-self-end sm:block">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-white/10 text-5xl backdrop-blur">
+                🛍️
+              </div>
+              <div className="mt-8 flex h-28 w-28 items-center justify-center rounded-2xl bg-white/10 text-5xl backdrop-blur">
+                🥬
+              </div>
+              <div className="-mt-8 flex h-28 w-28 items-center justify-center rounded-2xl bg-white/10 text-5xl backdrop-blur">
+                👕
+              </div>
+              <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-white/10 text-5xl backdrop-blur">
+                📦
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

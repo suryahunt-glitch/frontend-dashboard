@@ -39,7 +39,8 @@ function MyProductsContent() {
     if (modalState.data?.id) {
       await updateProduct(modalState.data.id, formData);
     } else {
-      await createProduct({ ...formData, store_id: store.id });
+      formData.append("store_id", store.id);
+      await createProduct(formData);
     }
     setModalState(null);
     load();
@@ -92,7 +93,7 @@ function MyProductsContent() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-ink-200 bg-ink-100">
-                <th className="px-4 py-3 font-medium text-ink-700">Nama</th>
+                <th className="px-4 py-3 font-medium text-ink-700">Produk</th>
                 <th className="px-4 py-3 font-medium text-ink-700">Harga</th>
                 <th className="px-4 py-3 font-medium text-ink-700">Stok</th>
                 <th className="px-4 py-3 text-right font-medium text-ink-700">Aksi</th>
@@ -101,7 +102,22 @@ function MyProductsContent() {
             <tbody>
               {products.map((p) => (
                 <tr key={p.id} className="border-b border-ink-200 last:border-0">
-                  <td className="px-4 py-3">{p.name}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-ink-100">
+                        {p.image_url ? (
+                          <img
+                            src={p.image_url}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-sm text-ink-200">🛍</span>
+                        )}
+                      </div>
+                      <span className="font-medium text-ink-900">{p.name}</span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{formatIDR(p.price)}</td>
                   <td className="px-4 py-3">{p.stock ?? "-"}</td>
                   <td className="px-4 py-3 text-right">
