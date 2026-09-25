@@ -27,6 +27,21 @@ class StatsOverview extends BaseWidget
                 ->description('Pesanan masuk')
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('primary'),
+
+            Stat::make('Stok Menipis', Product::whereBetween('stock', [1, 5])->count())
+                ->description('Produk dengan stok 1-5')
+                ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->color('danger'),
+
+            Stat::make('Nilai Inventaris', 'Rp ' . number_format(
+                Product::selectRaw('COALESCE(SUM(price * stock), 0) as total')->value('total'),
+                0,
+                ',',
+                '.'
+            ))
+                ->description('Harga x stok tersedia')
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('success'),
         ];
     }
 }

@@ -36,6 +36,12 @@ class ProductResource extends Resource
                 Forms\Components\TextInput::make('stock')
                     ->required()
                     ->numeric(),
+                Forms\Components\FileUpload::make('image_path')
+                    ->label('Foto Produk')
+                    ->image()
+                    ->disk('public')
+                    ->directory('products')
+                    ->imageEditor(),
             ]);
     }
 
@@ -48,6 +54,10 @@ class ProductResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\ImageColumn::make('image_path')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->square(),
                 Tables\Columns\TextColumn::make('price')
                     ->money()
                     ->sortable(),

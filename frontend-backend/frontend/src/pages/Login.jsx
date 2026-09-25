@@ -26,16 +26,18 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink-100 px-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-sage-900 px-4 py-10">
+      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-brand/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="text-2xl font-extrabold text-ink-900">
+          <div className="font-display text-3xl font-bold text-white">
             Marketplace<span className="text-brand">.</span>
           </div>
-          <p className="mt-1 text-sm text-ink-500">Masuk ke akun Anda</p>
+          <p className="mt-2 text-sm text-sage-200">Masuk ke akun Anda</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl bg-white p-6 shadow-card">
+        <form onSubmit={handleSubmit} className="relative space-y-4 rounded-2xl border border-white/50 bg-white p-7 shadow-2xl">
           <TextInput
             label="Email"
             type="email"

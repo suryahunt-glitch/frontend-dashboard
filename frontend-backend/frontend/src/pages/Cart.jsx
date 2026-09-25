@@ -11,9 +11,9 @@ export default function Cart() {
   if (items.length === 0) {
     return (
       <SiteLayout>
-        <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <div className="mx-auto max-w-2xl px-4 py-20 text-center">
           <p className="text-5xl">🛒</p>
-          <h1 className="mt-4 text-lg font-semibold text-ink-900">Keranjang Anda kosong</h1>
+          <h1 className="mt-4 font-display text-2xl font-bold text-sage-900">Keranjang Anda kosong</h1>
           <p className="mt-1 text-sm text-ink-500">Yuk mulai belanja produk favorit Anda.</p>
           <Link to="/produk">
             <Button variant="brand" className="mt-5">
@@ -27,13 +27,17 @@ export default function Cart() {
 
   return (
     <SiteLayout>
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="mb-6 text-xl font-bold text-ink-900">Keranjang Belanja</h1>
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <div className="mb-7">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-brand">Ringkasan belanja</p>
+          <h1 className="mt-2 font-display text-3xl font-bold text-sage-900">Keranjang Belanja</h1>
+          <p className="mt-2 text-sm text-ink-500">Periksa kembali produk sebelum melanjutkan pembayaran.</p>
+        </div>
 
-        <div className="divide-y divide-ink-200 rounded-lg border border-ink-200 bg-white">
+        <div className="divide-y divide-sage-200 overflow-hidden rounded-2xl border border-sage-200 bg-white shadow-card">
           {items.map(({ product, quantity }) => (
-            <div key={product.id} className="flex items-center gap-4 p-4">
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-ink-100">
+            <div key={product.id} className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap sm:p-5">
+              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-sage-100">
                 {product.image_url ? (
                   <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
                 ) : (
@@ -44,29 +48,29 @@ export default function Cart() {
               </div>
 
               <div className="flex-1">
-                <Link to={`/produk/${product.id}`} className="text-sm font-medium text-ink-900 hover:text-brand">
+                <Link to={`/produk/${product.id}`} className="text-sm font-bold text-sage-900 hover:text-brand">
                   {product.name}
                 </Link>
-                <p className="mt-1 text-sm font-semibold text-ink-900">{formatIDR(product.price)}</p>
+                <p className="mt-1 text-sm font-bold text-sage-900">{formatIDR(product.price)}</p>
               </div>
 
-              <div className="flex items-center rounded-md border border-ink-200">
+                <div className="flex items-center rounded-lg border border-sage-200">
                 <button
                   onClick={() => updateQuantity(product.id, quantity - 1)}
-                  className="px-2.5 py-1.5 text-ink-700 hover:bg-ink-100"
+                    className="px-2.5 py-1.5 text-sage-700 hover:bg-sage-100"
                 >
                   −
                 </button>
                 <span className="w-8 text-center text-sm">{quantity}</span>
                 <button
                   onClick={() => updateQuantity(product.id, quantity + 1)}
-                  className="px-2.5 py-1.5 text-ink-700 hover:bg-ink-100"
+                    className="px-2.5 py-1.5 text-sage-700 hover:bg-sage-100"
                 >
                   +
                 </button>
               </div>
 
-              <p className="w-28 text-right text-sm font-semibold text-ink-900">
+              <p className="w-28 text-right text-sm font-bold text-sage-900">
                 {formatIDR(product.price * quantity)}
               </p>
 
@@ -81,9 +85,9 @@ export default function Cart() {
           ))}
         </div>
 
-        <div className="mt-6 flex items-center justify-between rounded-lg border border-ink-200 bg-ink-100 p-4">
-          <span className="text-sm font-medium text-ink-700">Total Belanja</span>
-          <span className="text-xl font-extrabold text-ink-900">{formatIDR(total)}</span>
+        <div className="mt-6 flex items-center justify-between rounded-2xl border border-sage-200 bg-sage-100 p-5">
+          <span className="text-sm font-bold text-sage-700">Total Belanja</span>
+          <span className="font-display text-2xl font-bold text-sage-900">{formatIDR(total)}</span>
         </div>
 
         <div className="mt-5 flex justify-end">

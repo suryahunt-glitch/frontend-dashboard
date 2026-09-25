@@ -9,8 +9,8 @@ export function ProductCard({ product }) {
   const lowStock = !outOfStock && stock <= 5;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-ink-200 bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg">
-      <Link to={`/produk/${product.id}`} className="relative block aspect-square overflow-hidden bg-ink-100">
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-sage-200/80 bg-white shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-sage-200/50">
+      <Link to={`/produk/${product.id}`} className="relative block aspect-square overflow-hidden bg-sage-100">
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -37,9 +37,9 @@ export function ProductCard({ product }) {
           </span>
         )}
       </Link>
-      <div className="flex flex-1 flex-col gap-1.5 p-3.5">
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
         <Link to={`/produk/${product.id}`}>
-          <h3 className="line-clamp-2 text-sm font-medium text-ink-900 hover:text-brand">
+          <h3 className="line-clamp-2 text-sm font-bold text-sage-900 hover:text-brand">
             {product.name}
           </h3>
         </Link>
@@ -51,11 +51,11 @@ export function ProductCard({ product }) {
             {product.store_name}
           </Link>
         )}
-        <p className="text-base font-bold text-ink-900">{formatIDR(product.price)}</p>
+        <p className="text-base font-bold text-sage-900">{formatIDR(product.price)}</p>
         <button
           onClick={() => addItem(product, 1)}
           disabled={outOfStock}
-          className="mt-auto rounded-md border border-ink-900 py-1.5 text-xs font-semibold text-ink-900 transition hover:bg-ink-900 hover:text-white disabled:cursor-not-allowed disabled:border-ink-200 disabled:text-ink-500 disabled:hover:bg-transparent"
+          className="mt-auto rounded-lg border border-sage-900 py-2 text-xs font-bold text-sage-900 transition hover:bg-sage-900 hover:text-white disabled:cursor-not-allowed disabled:border-ink-200 disabled:text-ink-500 disabled:hover:bg-transparent"
         >
           {outOfStock ? "Stok Habis" : "+ Keranjang"}
         </button>

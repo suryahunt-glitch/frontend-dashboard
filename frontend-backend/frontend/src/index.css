@@ -1,24 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-
 @layer base {
   body {
-    font-family: "Inter", system-ui, sans-serif;
-    color: #1e1b4b;
-    background: #faf9ff;
+    font-family: "Manrope", system-ui, sans-serif;
+    color: #263238;
+    background: #f7f9f7;
   }
 
   ::selection {
-    background: #c4b5fd;
-    color: #2e1065;
+    background: #f7c948;
+    color: #173f35;
   }
 }
 
 @layer components {
   .purple-card {
-    @apply rounded-2xl border border-violet-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-100;
+    @apply rounded-2xl border border-sage-200 bg-white shadow-card transition hover:-translate-y-1 hover:shadow-xl hover:shadow-sage-100;
   }
 }

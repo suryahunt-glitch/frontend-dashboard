@@ -11,17 +11,24 @@ export default {
           200: "#E5E5E5",
           100: "#F5F5F4",
         },
+        sage: {
+          900: "#173F35",
+          700: "#286052",
+          200: "#D6E7DF",
+          100: "#EEF6F1",
+        },
         brand: {
-          DEFAULT: "#E11D48",
-          dark: "#BE123C",
-          light: "#FFE4E8",
+          DEFAULT: "#E76F51",
+          dark: "#C9563B",
+          light: "#FCE4DB",
         },
         accent: {
-          DEFAULT: "#F59E0B",
+          DEFAULT: "#F7C948",
         },
       },
       fontFamily: {
-        sans: ["'Inter'", "system-ui", "sans-serif"],
+        sans: ["'Manrope'", "system-ui", "sans-serif"],
+        display: ["'Space Grotesk'", "'Manrope'", "sans-serif"],
       },
       boxShadow: {
         card: "0 1px 2px rgba(0,0,0,0.06), 0 1px 6px rgba(0,0,0,0.04)",

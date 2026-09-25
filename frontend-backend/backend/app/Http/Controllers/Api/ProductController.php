@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -39,6 +40,7 @@ class ProductController extends Controller
             'stock'       => 'required|integer|min:0',
             'description' => 'nullable|string',
             'weight'      => 'nullable|numeric|min:0',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $store = $request->user()->store;
@@ -52,6 +54,9 @@ class ProductController extends Controller
             'name'     => $validated['name'],
             'price'    => $validated['price'],
             'stock'    => $validated['stock'],
+            'image_path' => $request->hasFile('image')
+                ? $request->file('image')->store('products', 'public')
+                : null,
         ]);
 
         // Simpan detail (description, weight) jika ada
@@ -78,9 +83,22 @@ class ProductController extends Controller
             'stock'       => 'sometimes|required|integer|min:0',
             'description' => 'nullable|string',
             'weight'      => 'nullable|numeric|min:0',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $product->update($request->only(['name', 'price', 'stock']));
+
+        if ($request->hasFile('image')) {
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+            $product->update([
+                'image_path' => $request->file('image')->store('products', 'public'),
+            ]);
+        } elseif ($request->boolean('remove_image') && $product->image_path) {
+            Storage::disk('public')->delete($product->image_path);
+            $product->update(['image_path' => null]);
+        }
 
         if ($request->has('description') || $request->has('weight')) {
             $product->detail()->updateOrCreate(
@@ -102,6 +120,10 @@ class ProductController extends Controller
         }
 
         $product->delete(); // pastikan ada cascade delete di migration untuk product_details
+
+        if ($product->image_path) {
+            Storage::disk('public')->delete($product->image_path);
+        }
 
         return response()->json(['message' => 'Produk berhasil dihapus.']);
     }
