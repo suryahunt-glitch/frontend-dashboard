@@ -10,6 +10,10 @@ class Payment extends Model
         'order_id',
         'method',
         'amount',
+        'status',
+        'gateway_order_id',
+        'gateway_transaction_id',
+        'gateway_response',
     ];
 
     public function order()

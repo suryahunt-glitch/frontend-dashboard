@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
+Route::post('/payments/midtrans/notification', [OrderController::class, 'notification']);
+
 // Publik — tidak perlu login
 Route::get('/stores', [StoreController::class, 'index']);
 Route::get('/stores/{store}', [StoreController::class, 'show']);

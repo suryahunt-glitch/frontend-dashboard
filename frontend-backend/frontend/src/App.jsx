@@ -12,6 +12,7 @@ import { CartProvider } from "./context/CartContext";
 
 import Home from "./pages/home";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import Register from "./pages/Register";
 import ProductList from "./pages/ProductList";
 import ProductDetail from "./pages/ProductDetail";
@@ -70,6 +71,7 @@ function AppRoutes() {
           <Route path="/" element={<Home />} />
 
           <Route path="/login" element={<Login />} />
+          <Route path="/lupa-password" element={<ForgotPassword />} />
           <Route path="/register" element={<Register />} />
 
           <Route path="/produk" element={<ProductList />} />

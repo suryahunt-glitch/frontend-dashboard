@@ -4,7 +4,12 @@ import client from "./client";
 // { store_id, items: [{product_id, quantity}], address, payment_method }
 export async function createOrder(payload) {
   const { data } = await client.post("/orders", payload);
-  return data.data ?? data;
+  const order = data.data ?? data.order ?? data;
+  return {
+    ...order,
+    snap_token: data.snap_token,
+    snap_redirect_url: data.snap_redirect_url,
+  };
 }
 
 // Daftar order milik user yang login (sebagai pembeli)

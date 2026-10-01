@@ -7,6 +7,12 @@ export async function login({ email, password }) {
   return data;
 }
 
+export async function forgotPassword(email) {
+  await ensureCsrfCookie();
+  const { data } = await rootClient.post("/forgot-password", { email });
+  return data;
+}
+
 export async function register({ name, email, password, password_confirmation }) {
   await ensureCsrfCookie();
   const { data } = await rootClient.post("/register", {

@@ -53,6 +53,12 @@ export default function Login() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
 
+          <div className="-mt-2 text-right">
+            <Link to="/lupa-password" className="text-xs font-bold text-brand hover:underline">
+              Lupa password?
+            </Link>
+          </div>
+
           {error && (
             <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
           )}

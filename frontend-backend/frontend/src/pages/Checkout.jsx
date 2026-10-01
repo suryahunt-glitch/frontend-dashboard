@@ -71,6 +71,13 @@ function CheckoutContent() {
             quantity,
           })),
         });
+
+        if (form.payment_method !== "cod") {
+          const paymentResult = await payWithMidtrans(order.snap_token);
+          if (!paymentResult) {
+            throw new Error("Pembayaran belum selesai.");
+          }
+        }
         orders.push(order);
       }
       clearCart();
@@ -80,11 +87,40 @@ function CheckoutContent() {
       setError(
         laravelErrors
           ? Object.values(laravelErrors).flat().join(" ")
-          : "Gagal membuat pesanan. Pastikan endpoint /api/orders menerima payload ini."
+          : err.message || "Gagal membuat pesanan atau pembayaran. Coba lagi."
       );
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function payWithMidtrans(token) {
+    return new Promise((resolve, reject) => {
+      const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
+      if (!token || !clientKey) {
+        reject(new Error("Payment gateway belum dikonfigurasi. Isi VITE_MIDTRANS_CLIENT_KEY."));
+        return;
+      }
+
+      const openSnap = () => window.snap.pay(token, {
+          onSuccess: () => resolve(true),
+          onPending: () => reject(new Error("Pembayaran masih menunggu konfirmasi.")),
+          onError: () => reject(new Error("Pembayaran gagal diproses.")),
+          onClose: () => reject(new Error("Popup pembayaran ditutup sebelum selesai.")),
+        });
+
+      if (window.snap) {
+        openSnap();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+      script.setAttribute("data-client-key", clientKey);
+      script.onload = openSnap;
+      script.onerror = () => reject(new Error("Gagal memuat payment gateway."));
+      document.body.appendChild(script);
+    });
   }
 
   return (
