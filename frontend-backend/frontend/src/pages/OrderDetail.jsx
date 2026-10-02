@@ -2,8 +2,68 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { SiteLayout } from "../components/layout/SiteLayout";
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import { Button } from "../components/ui/Button";
 import { fetchOrder, fetchPayment } from "../api/orders";
 import { formatIDR } from "../utils/format";
+
+const paymentMethodMap = {
+  transfer: "Transfer Bank",
+  qris: "QRIS",
+  dana: "DANA",
+  cod: "Cash on Delivery",
+};
+
+const paymentStatusMap = {
+  pending: {
+    label: "Menunggu Pembayaran",
+    classes: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+  },
+  paid: {
+    label: "Sudah Dibayar",
+    classes: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+  },
+  failed: {
+    label: "Pembayaran Gagal",
+    classes: "bg-red-50 text-red-700 ring-1 ring-red-200",
+  },
+  canceled: {
+    label: "Dibatalkan",
+    classes: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
+  },
+};
+
+const orderStatusMap = {
+  pending: {
+    label: "Menunggu Konfirmasi",
+    classes: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+  },
+  processing: {
+    label: "Diproses",
+    classes: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
+  },
+  shipped: {
+    label: "Dikirim",
+    classes: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
+  },
+  completed: {
+    label: "Selesai",
+    classes: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+  },
+  cancelled: {
+    label: "Dibatalkan",
+    classes: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
+  },
+};
+
+function getStatusBadge(status, type = "order") {
+  const map = type === "payment" ? paymentStatusMap : orderStatusMap;
+  const config = map[status] || {
+    label: status || "Tidak diketahui",
+    classes: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
+  };
+
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${config.classes}`}>{config.label}</span>;
+}
 
 function OrderDetailContent() {
   const { id } = useParams();
@@ -11,6 +71,7 @@ function OrderDetailContent() {
   const [payment, setPayment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -26,84 +87,206 @@ function OrderDetailContent() {
       });
   }, [id]);
 
-  if (loading) return <p className="text-sm text-ink-500">Memuat...</p>;
+  function payWithMidtrans(token) {
+    return new Promise((resolve, reject) => {
+      const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
+      if (!token || !clientKey) {
+        reject(new Error("Payment gateway belum dikonfigurasi. Isi VITE_MIDTRANS_CLIENT_KEY."));
+        return;
+      }
+
+      const openSnap = () => {
+        window.snap.pay(token, {
+          onSuccess: () => resolve(true),
+          onPending: () => reject(new Error("Pembayaran masih menunggu konfirmasi.")),
+          onError: () => reject(new Error("Pembayaran gagal diproses.")),
+          onClose: () => reject(new Error("Popup pembayaran ditutup sebelum selesai.")),
+        });
+      };
+
+      if (window.snap) {
+        openSnap();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+      script.setAttribute("data-client-key", clientKey);
+      script.onload = openSnap;
+      script.onerror = () => reject(new Error("Gagal memuat payment gateway."));
+      document.body.appendChild(script);
+    });
+  }
+
+  async function handlePayNow() {
+    if (!payment) return;
+
+    try {
+      setPaying(true);
+      const gatewayResponse = payment.gateway_response
+        ? JSON.parse(payment.gateway_response)
+        : null;
+      const token = gatewayResponse?.token || gatewayResponse?.snap_token;
+
+      if (!token) {
+        throw new Error("Token pembayaran tidak tersedia untuk pesanan ini.");
+      }
+
+      await payWithMidtrans(token);
+      window.location.reload();
+    } catch (err) {
+      setError(err.message || "Gagal memulai pembayaran.");
+    } finally {
+      setPaying(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="rounded-3xl border border-sage-200 bg-white p-8 text-center shadow-card">
+        <p className="text-sm text-ink-500">Memuat detail pesanan...</p>
+      </div>
+    );
+  }
 
   if (error || !order) {
     return (
-      <div>
-        <p className="text-sm text-red-600">{error || "Pesanan tidak ditemukan."}</p>
-        <Link to="/pesanan-saya" className="mt-3 inline-block text-sm text-brand hover:underline">
+      <div className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-card">
+        <p className="text-sm text-red-700">{error || "Pesanan tidak ditemukan."}</p>
+        <Link to="/pesanan-saya" className="mt-4 inline-block text-sm font-semibold text-brand hover:underline">
           ← Kembali ke pesanan saya
         </Link>
       </div>
     );
   }
 
+  const totalAmount = payment?.amount ?? order.total ?? 0;
+  const orderStatus = order.status || "pending";
+  const paymentStatus = payment?.status || "pending";
+
   return (
     <div>
-      <Link to="/pesanan-saya" className="mb-4 inline-block text-sm text-brand hover:underline">
+      <Link to="/pesanan-saya" className="mb-5 inline-flex items-center text-sm font-semibold text-brand hover:underline">
         ← Kembali ke pesanan saya
       </Link>
 
-      <div className="rounded-lg border border-ink-200 bg-white p-5 shadow-card">
-        <div className="flex items-center justify-between">
-          <h1 className="font-mono text-lg font-bold text-ink-900">
-            {order.order_number || `#${order.id}`}
-          </h1>
-          <span className="rounded bg-ink-100 px-2 py-0.5 text-xs font-medium text-ink-700">
-            {order.status}
-          </span>
-        </div>
-        {order.store_name && <p className="mt-1 text-sm text-ink-500">Toko: {order.store_name}</p>}
-        {order.address && <p className="mt-1 text-sm text-ink-500">Alamat: {order.address}</p>}
-
-        {order.items && order.items.length > 0 && (
-          <div className="mt-4 divide-y divide-ink-200 border-t border-ink-200 pt-3">
-            {order.items.map((item, idx) => (
-              <div key={idx} className="flex justify-between py-2 text-sm">
-                <span>
-                  {item.product_name || item.name} × {item.quantity}
-                </span>
-                <span className="font-medium">{formatIDR(item.price * item.quantity)}</span>
-              </div>
-            ))}
+      <div className="mb-6 rounded-3xl border border-sage-200 bg-white p-6 shadow-card">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand">Pesanan</p>
+            <h1 className="mt-2 font-display text-2xl font-bold text-sage-900">
+              {order.order_number || `#${order.id}`}
+            </h1>
           </div>
-        )}
 
-        <div className="mt-3 flex justify-between border-t border-ink-200 pt-3 text-base font-bold text-ink-900">
-          <span>Total</span>
-          <span>{formatIDR(order.total)}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {getStatusBadge(orderStatus, "order")}
+            {payment && getStatusBadge(paymentStatus, "payment")}
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl bg-sage-100/70 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-500">Toko</p>
+            <p className="mt-2 text-sm font-semibold text-sage-900">{order.store_name || "-"}</p>
+          </div>
+          <div className="rounded-2xl bg-sage-100/70 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-500">Alamat</p>
+            <p className="mt-2 text-sm font-medium text-sage-900 line-clamp-3">{order.address || "-"}</p>
+          </div>
+          <div className="rounded-2xl bg-sage-100/70 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-500">Total</p>
+            <p className="mt-2 text-lg font-bold text-sage-900">{formatIDR(totalAmount)}</p>
+          </div>
         </div>
       </div>
 
-      <div className="mt-5 rounded-lg border border-ink-200 bg-white p-5 shadow-card">
-        <h2 className="mb-3 text-sm font-semibold text-ink-900">Informasi Pembayaran</h2>
-        {payment ? (
-          <div className="space-y-1.5 text-sm text-ink-700">
-            <div className="flex justify-between">
-              <span>Metode</span>
-              <span className="font-medium">{payment.method}</span>
+      <div className="grid gap-6 lg:grid-cols-[1.35fr_0.9fr]">
+        <div className="rounded-3xl border border-sage-200 bg-white p-5 shadow-card">
+          <h2 className="mb-4 text-lg font-bold text-sage-900">Detail Pesanan</h2>
+
+          {order.items && order.items.length > 0 ? (
+            <div className="space-y-3">
+              {order.items.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between gap-4 rounded-2xl bg-sage-50/80 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-sage-900">
+                      {item.product_name || item.name || "Produk"}
+                    </p>
+                    <p className="mt-1 text-xs text-ink-500">Qty: {item.quantity}</p>
+                  </div>
+                  <p className="text-sm font-bold text-sage-900">
+                    {formatIDR((item.price ?? item.unit_price ?? 0) * (item.quantity ?? 1))}
+                  </p>
+                </div>
+              ))}
             </div>
-            <div className="flex justify-between">
-              <span>Status</span>
-              <span className="font-medium">{payment.status}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Jumlah</span>
-              <span className="font-medium">{formatIDR(payment.amount)}</span>
-            </div>
-            {payment.paid_at && (
-              <div className="flex justify-between">
-                <span>Dibayar pada</span>
-                <span className="font-medium">
-                  {new Date(payment.paid_at).toLocaleString("id-ID")}
+          ) : (
+            <p className="text-sm text-ink-500">Tidak ada item dalam pesanan ini.</p>
+          )}
+
+          <div className="mt-5 flex items-center justify-between border-t border-sage-200 pt-4">
+            <span className="text-sm font-semibold text-ink-600">Total Pembayaran</span>
+            <span className="text-xl font-black text-sage-900">{formatIDR(totalAmount)}</span>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-sage-200 bg-white p-5 shadow-card">
+          <h2 className="mb-4 text-lg font-bold text-sage-900">Status Pembayaran</h2>
+
+          {payment ? (
+            <div className="space-y-4 text-sm">
+              <div className="flex items-center justify-between rounded-2xl bg-sage-50 px-3 py-2.5">
+                <span className="text-ink-500">Metode</span>
+                <span className="font-semibold text-sage-900">
+                  {paymentMethodMap[payment.method] || payment.method || "-"}
                 </span>
               </div>
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-ink-500">Belum ada data pembayaran untuk pesanan ini.</p>
-        )}
+
+              <div className="flex items-center justify-between rounded-2xl bg-sage-50 px-3 py-2.5">
+                <span className="text-ink-500">Status</span>
+                {getStatusBadge(paymentStatus, "payment")}
+              </div>
+
+              <div className="flex items-center justify-between rounded-2xl bg-sage-50 px-3 py-2.5">
+                <span className="text-ink-500">Jumlah</span>
+                <span className="font-semibold text-sage-900">{formatIDR(payment.amount || totalAmount)}</span>
+              </div>
+
+              {payment.paid_at && (
+                <div className="flex items-center justify-between rounded-2xl bg-sage-50 px-3 py-2.5">
+                  <span className="text-ink-500">Dibayar pada</span>
+                  <span className="font-semibold text-sage-900">
+                    {new Date(payment.paid_at).toLocaleString("id-ID")}
+                  </span>
+                </div>
+              )}
+
+              {payment.gateway_transaction_id && (
+                <div className="flex items-center justify-between rounded-2xl bg-sage-50 px-3 py-2.5">
+                  <span className="text-ink-500">ID Transaksi</span>
+                  <span className="font-semibold text-sage-900">{payment.gateway_transaction_id}</span>
+                </div>
+              )}
+
+              {payment.method !== "cod" && paymentStatus === "pending" && (
+                <Button
+                  type="button"
+                  variant="brand"
+                  className="w-full"
+                  onClick={handlePayNow}
+                  disabled={paying}
+                >
+                  {paying ? "Memproses..." : "Bayar sekarang"}
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-sage-200 bg-sage-50 p-4 text-sm text-ink-500">
+              Belum ada data pembayaran untuk pesanan ini.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -113,7 +296,7 @@ export default function OrderDetail() {
   return (
     <ProtectedRoute>
       <SiteLayout>
-        <div className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mx-auto max-w-5xl px-4 py-8">
           <OrderDetailContent />
         </div>
       </SiteLayout>

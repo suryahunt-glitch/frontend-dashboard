@@ -70,25 +70,37 @@ export function ProductFormModal({ initialData, onClose, onSubmit }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
-        <h2 className="mb-4 text-lg font-semibold text-ink-900">
-          {isEdit ? "Ubah Produk" : "Tambah Produk"}
-        </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-sage-200 bg-white p-6 shadow-[0_30px_70px_rgba(15,23,42,0.25)]">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand">Produk</p>
+            <h2 className="mt-1 text-xl font-bold text-sage-900">
+              {isEdit ? "Ubah Produk" : "Tambah Produk"}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-100 text-lg text-sage-700 transition hover:bg-sage-200"
+          >
+            ×
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <span className="mb-1.5 block text-sm font-medium text-ink-700">Foto Produk</span>
+          <div className="rounded-2xl border border-sage-200 bg-sage-50 p-4">
+            <span className="mb-2 block text-sm font-semibold text-sage-900">Foto Produk</span>
             <div className="flex items-center gap-4">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border border-dashed border-ink-200 bg-ink-100">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-sage-200 bg-white">
                 {preview ? (
                   <img src={preview} alt="Preview produk" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-2xl text-ink-200">🛍</span>
+                  <span className="text-3xl text-sage-300">🛍</span>
                 )}
               </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="w-fit cursor-pointer rounded-md border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-700 transition hover:bg-ink-100">
+              <div className="flex flex-col gap-2">
+                <label className="w-fit cursor-pointer rounded-xl border border-sage-200 bg-white px-3 py-2 text-xs font-semibold text-sage-800 transition hover:bg-sage-100">
                   {preview ? "Ganti Foto" : "Unggah Foto"}
                   <input
                     ref={fileInputRef}
@@ -112,37 +124,45 @@ export function ProductFormModal({ initialData, onClose, onSubmit }) {
             </div>
           </div>
 
-          <TextInput
-            label="Nama Produk"
-            required
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-          <TextInput
-            label="SKU"
-            value={form.sku}
-            onChange={(e) => setForm({ ...form, sku: e.target.value })}
-          />
-          <TextInput
-            label="Harga"
-            type="number"
-            required
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-          />
-          <TextInput
-            label="Stok"
-            type="number"
-            value={form.stock}
-            onChange={(e) => setForm({ ...form, stock: e.target.value })}
-          />
-          <TextArea
-            label="Deskripsi"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <TextInput
+                label="Nama Produk"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
+            <TextInput
+              label="SKU"
+              value={form.sku}
+              onChange={(e) => setForm({ ...form, sku: e.target.value })}
+            />
+            <TextInput
+              label="Stok"
+              type="number"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+            />
+            <div className="md:col-span-2">
+              <TextInput
+                label="Harga"
+                type="number"
+                required
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <TextArea
+                label="Deskripsi"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
+            </div>
+          </div>
 
-          {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+          {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={onClose}>

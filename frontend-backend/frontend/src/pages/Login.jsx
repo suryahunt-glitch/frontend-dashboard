@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { TextInput } from "../components/ui/Field";
 import { Button } from "../components/ui/Button";
@@ -7,8 +7,13 @@ import { Button } from "../components/ui/Button";
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    searchParams.get("google") === "failed"
+      ? "Login Google gagal. Silakan coba lagi."
+      : "",
+  );
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e) {
@@ -66,6 +71,20 @@ export default function Login() {
           <Button type="submit" variant="brand" className="w-full" disabled={submitting}>
             {submitting ? "Memproses..." : "Masuk"}
           </Button>
+
+          <div className="flex items-center gap-3 text-xs text-ink-400">
+            <span className="h-px flex-1 bg-sage-200" />
+            <span>atau</span>
+            <span className="h-px flex-1 bg-sage-200" />
+          </div>
+
+          <a
+            href={`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/auth/google/redirect`}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-sage-200 bg-white px-4 py-3 text-sm font-semibold text-ink-700 transition hover:bg-sage-50"
+          >
+            <span aria-hidden="true" className="font-display text-base font-bold text-[#4285F4]">G</span>
+            Masuk dengan Google
+          </a>
 
           <p className="text-center text-sm text-ink-500">
             Belum punya akun?{" "}
