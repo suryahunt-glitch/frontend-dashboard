@@ -42,6 +42,24 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        $email = $this->string('email')->toString();
+        $password = $this->input('password');
+
+        if (
+            config('app.env') === 'local'
+            && config('auth.local_demo.enabled', false)
+            && $password === config('auth.local_demo.password', '12345678')
+        ) {
+            $user = \App\Models\User::query()->where('email', $email)->first();
+
+            if ($user) {
+                Auth::login($user, $this->boolean('remember'));
+                RateLimiter::clear($this->throttleKey());
+
+                return;
+            }
+        }
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 

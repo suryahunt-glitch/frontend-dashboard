@@ -14,10 +14,12 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-   public function store()
-{
-    return $this->hasOne(Store::class);
-}
+    use HasFactory;
+
+    public function store()
+    {
+        return $this->hasOne(Store::class);
+    }
 
 public function orders()
 {

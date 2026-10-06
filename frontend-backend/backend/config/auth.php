@@ -20,6 +20,11 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
+    'local_demo' => [
+        'enabled' => env('LOCAL_LOGIN_ENABLED', false),
+        'password' => env('LOCAL_LOGIN_PASSWORD', '12345678'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards

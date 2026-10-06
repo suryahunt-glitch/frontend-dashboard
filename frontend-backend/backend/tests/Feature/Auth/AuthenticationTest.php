@@ -35,6 +35,39 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_users_can_authenticate_with_local_demo_password(): void
+    {
+        config(['app.env' => 'local']);
+        config(['auth.local_demo.enabled' => true]);
+        config(['auth.local_demo.password' => '12345678']);
+
+        $user = User::factory()->create();
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => '12345678',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertNoContent();
+    }
+
+    public function test_local_demo_password_is_disabled_outside_local_environment(): void
+    {
+        config(['app.env' => 'production']);
+        config(['auth.local_demo.enabled' => true]);
+        config(['auth.local_demo.password' => '12345678']);
+
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => '12345678',
+        ]);
+
+        $this->assertGuest();
+    }
+
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();
