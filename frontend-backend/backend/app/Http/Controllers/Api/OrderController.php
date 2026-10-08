@@ -120,8 +120,16 @@ class OrderController extends Controller
             'status' => $paymentStatus,
             'gateway_transaction_id' => $payload['transaction_id'] ?? null,
             'gateway_response' => json_encode($payload),
+            'paid_at' => $paymentStatus === 'paid' ? ($payload['settlement_time'] ?? now()) : null,
         ]);
-        $payment->order()->update(['status' => $paymentStatus]);
+
+        // Status order mengikuti pembayaran dengan istilah milik order.
+        $orderStatus = match ($paymentStatus) {
+            'paid' => 'processing',
+            'failed' => 'cancelled',
+            default => 'pending',
+        };
+        $payment->order()->update(['status' => $orderStatus]);
 
         return response()->json(['message' => 'Notification processed']);
     }

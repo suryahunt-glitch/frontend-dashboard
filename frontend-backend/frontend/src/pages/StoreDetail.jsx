@@ -15,9 +15,9 @@ export default function StoreDetail() {
   useEffect(() => {
     setLoading(true);
     Promise.all([fetchStore(id), fetchProducts({ storeId: id })])
-      .then(([storeData, productData]) => {
+      .then(([storeData, { items }]) => {
         setStore(storeData);
-        setProducts(productData);
+        setProducts(items);
       })
       .catch(() => setError("Toko tidak ditemukan atau gagal dimuat."))
       .finally(() => setLoading(false));

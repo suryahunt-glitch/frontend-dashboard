@@ -25,6 +25,13 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrdersList from "./pages/OrdersList";
 import OrderDetail from "./pages/OrderDetail";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminStores from "./pages/admin/AdminStores";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -66,7 +73,7 @@ function AppRoutes() {
     <>
       <ScrollToTop />
 
-      <div className="min-h-screen bg-[#faf9ff] text-slate-800">
+      <div className="min-h-screen bg-[#FFFBEB] text-slate-800">
         <Routes>
           <Route path="/" element={<Home />} />
 
@@ -89,6 +96,15 @@ function AppRoutes() {
 
           <Route path="/pesanan-saya" element={<OrdersList />} />
           <Route path="/pesanan-saya/:id" element={<OrderDetail />} />
+
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="produk" element={<AdminProducts />} />
+            <Route path="pesanan" element={<AdminOrders />} />
+            <Route path="toko" element={<AdminStores />} />
+            <Route path="pengguna" element={<AdminUsers />} />
+          </Route>
 
           <Route path="*" element={<NotFound />} />
         </Routes>

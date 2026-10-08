@@ -5,6 +5,7 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { createOrder } from "../api/orders";
+import { payWithMidtrans } from "../utils/midtrans";
 import { formatIDR } from "../utils/format";
 
 function CheckoutContent() {
@@ -84,43 +85,21 @@ function CheckoutContent() {
       navigate("/pesanan-berhasil", { state: { orders } });
     } catch (err) {
       const laravelErrors = err.response?.data?.errors;
+      const midtransNotConfigured =
+        err.response?.status === 422 && laravelErrors?.payment_method;
       setError(
         laravelErrors
           ? Object.values(laravelErrors).flat().join(" ")
           : err.message || "Gagal membuat pesanan atau pembayaran. Coba lagi."
       );
+      if (midtransNotConfigured) {
+        setError(
+          "Midtrans belum dikonfigurasi. Isi MIDTRANS_SERVER_KEY di .env backend dan VITE_MIDTRANS_CLIENT_KEY di .env frontend."
+        );
+      }
     } finally {
       setSubmitting(false);
     }
-  }
-
-  function payWithMidtrans(token) {
-    return new Promise((resolve, reject) => {
-      const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
-      if (!token || !clientKey) {
-        reject(new Error("Payment gateway belum dikonfigurasi. Isi VITE_MIDTRANS_CLIENT_KEY."));
-        return;
-      }
-
-      const openSnap = () => window.snap.pay(token, {
-          onSuccess: () => resolve(true),
-          onPending: () => reject(new Error("Pembayaran masih menunggu konfirmasi.")),
-          onError: () => reject(new Error("Pembayaran gagal diproses.")),
-          onClose: () => reject(new Error("Popup pembayaran ditutup sebelum selesai.")),
-        });
-
-      if (window.snap) {
-        openSnap();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-      script.setAttribute("data-client-key", clientKey);
-      script.onload = openSnap;
-      script.onerror = () => reject(new Error("Gagal memuat payment gateway."));
-      document.body.appendChild(script);
-    });
   }
 
   return (

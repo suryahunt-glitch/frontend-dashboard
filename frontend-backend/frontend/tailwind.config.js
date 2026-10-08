@@ -5,33 +5,40 @@ export default {
     extend: {
       colors: {
         ink: {
-          900: "#171717",
-          700: "#3F3F3F",
-          500: "#737373",
-          200: "#E5E5E5",
+          900: "#1C1917",
+          700: "#44403C",
+          500: "#78716C",
+          200: "#E7E5E4",
           100: "#F5F5F4",
         },
+        // Tema "Toko Kelontong": hijau segar daun sebagai warna utama.
         sage: {
-          900: "#173F35",
-          700: "#286052",
-          200: "#D6E7DF",
-          100: "#EEF6F1",
+          900: "#14532D",
+          800: "#166534",
+          700: "#15803D",
+          500: "#22C55E",
+          400: "#4ADE80",
+          300: "#86EFAC",
+          200: "#BBF7D0",
+          100: "#DCFCE7",
         },
+        // Aksi utama: oranye hangat seperti label harga kelontong.
         brand: {
-          DEFAULT: "#E76F51",
-          dark: "#C9563B",
-          light: "#FCE4DB",
+          DEFAULT: "#EA580C",
+          dark: "#C2410C",
+          light: "#FFEDD5",
         },
+        // Aksen: kuning cerah.
         accent: {
-          DEFAULT: "#F7C948",
+          DEFAULT: "#FACC15",
         },
       },
       fontFamily: {
-        sans: ["'Manrope'", "system-ui", "sans-serif"],
-        display: ["'Space Grotesk'", "'Manrope'", "sans-serif"],
+        sans: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],
+        display: ["'Sora'", "'Plus Jakarta Sans'", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(0,0,0,0.06), 0 1px 6px rgba(0,0,0,0.04)",
+        card: "0 1px 2px rgba(20,83,45,0.08), 0 8px 24px rgba(20,83,45,0.08)",
       },
     },
   },

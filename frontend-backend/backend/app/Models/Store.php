@@ -10,6 +10,7 @@ class Store extends Model
         'user_id',
         'name',
         'address',
+        'phone',
     ];
 
     public function user()

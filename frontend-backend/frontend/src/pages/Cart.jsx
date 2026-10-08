@@ -3,6 +3,7 @@ import { SiteLayout } from "../components/layout/SiteLayout";
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { formatIDR } from "../utils/format";
+import { resolveImageUrl } from "../utils/image";
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, total } = useCart();
@@ -38,8 +39,8 @@ export default function Cart() {
           {items.map(({ product, quantity }) => (
             <div key={product.id} className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap sm:p-5">
               <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-sage-100">
-                {product.image_url ? (
-                  <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
+                {resolveImageUrl(product.image_url) ? (
+                  <img src={resolveImageUrl(product.image_url)} alt={product.name} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-xl text-ink-200">
                     🛍

@@ -14,6 +14,11 @@ class Payment extends Model
         'gateway_order_id',
         'gateway_transaction_id',
         'gateway_response',
+        'paid_at',
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
     ];
 
     public function order()

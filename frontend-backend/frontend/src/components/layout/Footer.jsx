@@ -5,9 +5,9 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-3">
           <div>
             <div className="mb-2 font-display text-lg font-bold text-white">
-              Marketplace<span className="text-brand">.</span>
+              KelontongKu<span className="text-brand">.</span>
             </div>
-            <p className="max-w-xs leading-6">Jual beli langsung antar pengguna, gampang dan cepat.</p>
+            <p className="max-w-xs leading-6">Belanja sembako & kebutuhan harian dari toko kelontong sekitar.</p>
           </div>
           <div>
             <div className="mb-3 font-bold text-white">Bantuan</div>
@@ -27,7 +27,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-white/10 pt-6 text-center text-xs text-sage-200">
-          © {new Date().getFullYear()} Marketplace. Semua hak dilindungi.
+          © {new Date().getFullYear()} KelontongKu. Semua hak dilindungi.
         </div>
       </div>
     </footer>

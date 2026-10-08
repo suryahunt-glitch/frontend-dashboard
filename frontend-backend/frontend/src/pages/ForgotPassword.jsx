@@ -35,7 +35,7 @@ export default function ForgotPassword() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <div className="font-display text-3xl font-bold text-white">
-            Marketplace<span className="text-brand">.</span>
+            KelontongKu<span className="text-brand">.</span>
           </div>
           <p className="mt-2 text-sm text-sage-200">Pulihkan akses akun Anda</p>
         </div>

@@ -11,7 +11,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchProducts()
-      .then((data) => setProducts(data.slice(0, 8)))
+      .then(({ items }) => setProducts(items.slice(0, 8)))
       .catch(() => setError("Gagal memuat produk dari API."))
       .finally(() => setLoading(false));
   }, []);
@@ -26,14 +26,14 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:grid-cols-2 sm:items-center sm:py-24">
           <div>
             <span className="mb-4 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-accent">
-              Belanja lokal, tumbuh bersama
+              Sembako segar tiap hari
             </span>
             <h1 className="font-display text-4xl font-bold leading-[1.08] text-white sm:text-5xl">
-              Jual dan beli langsung antar pengguna.
+              Belanja kelontong gampang, harga tetangga.
             </h1>
             <p className="mt-5 max-w-md text-base leading-7 text-sage-100">
-              Buka toko sendiri dan mulai jual produk, atau jelajahi ribuan
-              toko lain di sini.
+              Beras, minyak, telur, mie, dan kebutuhan harian lainnya dari
+              toko kelontong sekitar Anda. Buka toko sendiri juga bisa!
             </p>
             <div className="mt-6 flex gap-3">
               <Link
@@ -54,16 +54,16 @@ export default function Home() {
           <div className="hidden justify-self-end sm:block">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex h-28 w-28 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-5xl shadow-lg backdrop-blur">
-                🛍️
+                🍚
               </div>
               <div className="mt-8 flex h-28 w-28 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-5xl shadow-lg backdrop-blur">
-                🥬
+                🥚
               </div>
               <div className="-mt-8 flex h-28 w-28 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-5xl shadow-lg backdrop-blur">
-                👕
+                🍜
               </div>
               <div className="flex h-28 w-28 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-5xl shadow-lg backdrop-blur">
-                📦
+                🧃
               </div>
             </div>
           </div>

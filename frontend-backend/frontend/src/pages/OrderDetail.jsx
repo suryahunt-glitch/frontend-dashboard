@@ -4,6 +4,7 @@ import { SiteLayout } from "../components/layout/SiteLayout";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { Button } from "../components/ui/Button";
 import { fetchOrder, fetchPayment } from "../api/orders";
+import { payWithMidtrans, extractSnapToken } from "../utils/midtrans";
 import { formatIDR } from "../utils/format";
 
 const paymentMethodMap = {
@@ -87,49 +88,16 @@ function OrderDetailContent() {
       });
   }, [id]);
 
-  function payWithMidtrans(token) {
-    return new Promise((resolve, reject) => {
-      const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
-      if (!token || !clientKey) {
-        reject(new Error("Payment gateway belum dikonfigurasi. Isi VITE_MIDTRANS_CLIENT_KEY."));
-        return;
-      }
-
-      const openSnap = () => {
-        window.snap.pay(token, {
-          onSuccess: () => resolve(true),
-          onPending: () => reject(new Error("Pembayaran masih menunggu konfirmasi.")),
-          onError: () => reject(new Error("Pembayaran gagal diproses.")),
-          onClose: () => reject(new Error("Popup pembayaran ditutup sebelum selesai.")),
-        });
-      };
-
-      if (window.snap) {
-        openSnap();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-      script.setAttribute("data-client-key", clientKey);
-      script.onload = openSnap;
-      script.onerror = () => reject(new Error("Gagal memuat payment gateway."));
-      document.body.appendChild(script);
-    });
-  }
-
   async function handlePayNow() {
     if (!payment) return;
 
     try {
       setPaying(true);
-      const gatewayResponse = payment.gateway_response
-        ? JSON.parse(payment.gateway_response)
-        : null;
-      const token = gatewayResponse?.token || gatewayResponse?.snap_token;
+      setError("");
+      const token = extractSnapToken(payment);
 
       if (!token) {
-        throw new Error("Token pembayaran tidak tersedia untuk pesanan ini.");
+        throw new Error("Token pembayaran tidak tersedia untuk pesanan ini (mungkin sudah kedaluwarsa).");
       }
 
       await payWithMidtrans(token);

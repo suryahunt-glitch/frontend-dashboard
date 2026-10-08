@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/payments/midtrans/notification', [OrderController::class, 'notification']);
@@ -30,4 +31,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/produk', [ProductController::class, 'index']);
     Route::get('/produk/{product}', [ProductController::class, 'show']);
+
+    // Khusus admin (React /admin + Filament setara)
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('/stats', [AdminController::class, 'stats']);
+        Route::get('/products', [AdminController::class, 'products']);
+        Route::delete('/products/{product}', [AdminController::class, 'destroyProduct']);
+        Route::get('/orders', [AdminController::class, 'orders']);
+        Route::put('/orders/{order}/status', [AdminController::class, 'updateOrderStatus']);
+        Route::get('/stores', [AdminController::class, 'stores']);
+        Route::delete('/stores/{store}', [AdminController::class, 'destroyStore']);
+        Route::get('/users', [AdminController::class, 'users']);
+        Route::put('/users/{user}/admin', [AdminController::class, 'setAdmin']);
+    });
 });

@@ -24,12 +24,6 @@ return [
         'snap_url' => env('MIDTRANS_SNAP_URL', 'https://app.sandbox.midtrans.com'),
     ],
 
-    'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL', 'http://localhost:8000').'/auth/google/callback'),
-    ],
-
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
 
     'resend' => [

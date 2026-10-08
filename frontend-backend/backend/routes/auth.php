@@ -1,26 +1,23 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])
-    ->name('google.redirect');
+// Pendaftaran publik DINONAKTIFKAN: akun hanya dibuat oleh admin lewat
+// dashboard (/admin → Users). Login memakai akun yang sudah ada di dashboard.
+Route::post('/register', function () {
+    return response()->json([
+        'message' => 'Pendaftaran akun baru hanya melalui admin. Hubungi admin untuk dibuatkan akun.',
+    ], 403);
+})->name('register');
 
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
-    ->name('google.callback');
-
-Route::post('/register', [RegisteredUserController::class, 'store'])
-    ->middleware('guest')
-    ->name('register');
-
+// Tanpa middleware 'guest': user yang sedang login (mis. akun demo) tetap bisa
+// login ulang sebagai akun lain (mis. akun admin) tanpa harus logout dulu.
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest')
     ->name('login');
 
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])

@@ -23,7 +23,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-sage-200/80 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center gap-6 px-4">
         <Link to="/" className="shrink-0 font-display text-xl font-bold tracking-tight text-sage-900">
-          Marketplace<span className="text-brand">.</span>
+          KelontongKu<span className="text-brand">.</span>
         </Link>
 
         <form onSubmit={handleSearch} className="hidden flex-1 sm:block">
@@ -52,6 +52,11 @@ export function Navbar() {
               <Link to="/pesanan-saya" className="hidden transition hover:text-brand sm:inline">
                 Pesanan Saya
               </Link>
+              {user.is_admin && (
+                <Link to="/admin" className="hidden rounded-full bg-brand px-3 py-1.5 text-white transition hover:bg-brand-dark sm:inline">
+                  Admin
+                </Link>
+              )}
             </>
           )}
 

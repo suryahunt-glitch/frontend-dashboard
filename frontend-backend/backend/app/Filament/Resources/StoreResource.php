@@ -46,6 +46,11 @@ class StoreResource extends Resource
                 Textarea::make('address')
                     ->required()
                     ->columnSpanFull(),
+
+                TextInput::make('phone')
+                    ->label('Telepon')
+                    ->tel()
+                    ->maxLength(30),
             ]);
     }
 
@@ -60,6 +65,11 @@ class StoreResource extends Resource
 
                 TextColumn::make('name')
                     ->searchable(),
+
+                TextColumn::make('phone')
+                    ->label('Telepon')
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->dateTime()
